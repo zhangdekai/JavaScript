@@ -361,6 +361,18 @@ xiaoming.hasOwnProperty('name'); // true
 xiaoming.hasOwnProperty('toString'); // false
 
 
+八.条件判断
+
+1.JavaScript使用if () { ... } else { ... }来进行条件判断。
+其中else语句是可选的。如果语句块只包含一条语句，那么可以省略{}：
+这就是为什么我们建议永远都要写上{}。
+
+2.JavaScript把null、undefined、0、NaN和空字符串''视为false，其他值一概视为true，因此上述代码条件判断的结果是true。
+
+
+
+
+
 
 
 
