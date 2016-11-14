@@ -369,9 +369,9 @@ xiaoming.hasOwnProperty('toString'); // false
 
 2.JavaScript把null、undefined、0、NaN和空字符串''视为false，其他值一概视为true，因此上述代码条件判断的结果是true。
 
+九.循环
 
-
-
+1.
 
 
 
