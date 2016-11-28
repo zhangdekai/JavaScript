@@ -510,6 +510,50 @@ a.forEach(function (element) {
 });
 
 
+					第二部分
+
+一.函数
+
+1.定义函数
+function abs(x) {
+    if (x >= 0) {
+        return x;
+    } else {
+        return -x;
+    }
+}
+function指出这是一个函数定义；
+abs是函数的名称；
+(x)括号内列出函数的参数，多个参数以,分隔；
+{ ... }之间的代码是函数体，可以包含若干语句，甚至可以没有任何语句。
+
+2.因此，第二种定义函数的方式如下：
+var abs = function (x) {
+    if (x >= 0) {
+        return x;
+    } else {
+        return -x;
+    }
+};
+
+3.由于JavaScript允许传入任意个参数而不影响调用，因此传入的参数比定义的参数多也没有问题，虽然函数内部并不需要这些参数：
+传入的参数比定义的少也没有问题：
+
+
+4.JavaScript还有一个免费赠送的关键字arguments，它只在函数内部起作用，并且永远指向当前函数的调用者传入的所有参数。arguments类似Array但它不是一个Array：
+function foo(x) {
+    alert(x); // 10
+    for (var i=0; i<arguments.length; i++) {
+        alert(arguments[i]); // 10, 20, 30
+    }
+}
+foo(10, 20, 30);
+
+5.实际上arguments最常用于判断传入参数的个数。你可能会看到这样的写法：
+
+
+
+
 
 
 
