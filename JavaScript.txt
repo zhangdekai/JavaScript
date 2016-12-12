@@ -550,6 +550,69 @@ function foo(x) {
 foo(10, 20, 30);
 
 5.实际上arguments最常用于判断传入参数的个数。你可能会看到这样的写法：
+// foo(a[, b], c)
+// 接收2~3个参数，b是可选参数，如果只传2个参数，b默认为null：
+function foo(a, b, c) {
+    if (arguments.length === 2) {
+        // 实际拿到的参数是a和b，c为undefined
+        c = b; // 把b赋给c
+        b = null; // b变为默认值
+    }
+    // ...
+}
+要把中间的参数b变为“可选”参数，就只能通过arguments判断，然后重新调整参数并赋值。
+
+6.由于JavaScript函数允许接收任意个参数，于是我们就不得不用arguments来获取所有参数：
+ES6之前：
+function foo(a, b) {
+    var i, rest = [];
+    if (arguments.length > 2) {
+        for (i = 2; i<arguments.length; i++) {
+            rest.push(arguments[i]);
+        }
+    }
+    console.log('a = ' + a);
+    console.log('b = ' + b);
+    console.log(rest);
+}
+ES6 ：
+function foo(a, b, ...rest) {
+    console.log('a = ' + a);
+    console.log('b = ' + b);
+    console.log(rest);
+}
+
+foo(1, 2, 3, 4, 5);
+// 结果:
+// a = 1
+// b = 2
+// Array [ 3, 4, 5 ]
+
+foo(1);
+// 结果:
+// a = 1
+// b = undefined
+// Array []
+
+7.小心你的return语句
+
+前面我们讲到了JavaScript引擎有一个在行末自动添加分号的机制，这可能让你栽到return语句的一个大坑：
+
+二.变量作用域
+
+1.在JavaScript中，用var申明的变量实际上是有作用域的。
+如果一个变量在函数体内部申明，则该变量的作用域为整个函数体，在函数体外不可引用该变量：
+
+2.如果两个不同的函数各自申明了同一个变量，那么该变量只在各自的函数体内起作用。换句话说，不同函数内部的同名变量互相独立，互不影响：
+
+3.由于JavaScript的函数可以嵌套，此时，内部函数可以访问外部函数定义的变量，反过来则不行：
+
+
+
+
+
+
+
 
 
 
