@@ -293,7 +293,131 @@ arr.sort(function (x, y) {
 10.最后友情提示，sort()方法会直接对Array进行修改，它返回的结果仍是当前Array：
 
 五：闭包
-:
+1.函数作为返回值
+高阶函数除了可以接受函数作为参数外，还可以把函数作为结果值返回。
+请再注意一点，当我们调用lazy_sum()时，每次调用都会返回一个新的函数，即使传入相同的参数：
+var f1 = lazy_sum([1, 2, 3, 4, 5]);
+var f2 = lazy_sum([1, 2, 3, 4, 5]);
+f1 === f2; // false
+
+？？？？？？？？？
+
+
+六.箭头函数
+1.ES6标准新增了一种新的函数：Arrow Function（箭头函数）。
+x => x * x
+上面的箭头函数相当于：
+function (x) {
+    return x * x;
+}
+
+2.箭头函数相当于匿名函数，并且简化了函数定义。箭头函数有两种格式，一种像上面的，只包含一个表达式，连{ ... }和return都省略掉了。还有一种可以包含多条语句，这时候就不能省略{ ... }和return：
+x => {
+    if (x > 0) {
+        return x * x;
+    }
+    else {
+        return - x * x;
+    }
+}
+
+// 两个参数:
+(x, y) => x * x + y * y
+
+// 无参数:
+() => 3.14
+
+// 可变参数:
+(x, y, ...rest) => {
+    var i, sum = x + y;
+    for (i=0; i<rest.length; i++) {
+        sum += rest[i];
+    }
+    return sum;
+}
+
+3.如果要返回一个对象，就要注意，如果是单表达式，这么写的话会报错：
+// SyntaxError:
+x => { foo: x }
+因为和函数体的{ ... }有语法冲突，所以要改为：
+// ok:
+x => ({ foo: x })
+
+4.箭头函数看上去是匿名函数的一种简写，但实际上，箭头函数和匿名函数有个明显的区别：箭头函数内部的this是词法作用域，由上下文确定。
+
+5.回顾前面的例子，由于JavaScript函数对this绑定的错误处理，下面的例子无法得到预期结果：
+var obj = {
+    birth: 1990,
+    getAge: function () {
+        var b = this.birth; // 1990
+        var fn = function () {
+            return new Date().getFullYear() - this.birth; // this指向window或undefined
+        };
+        return fn();
+    }
+};
+
+现在，箭头函数完全修复了this的指向，this总是指向词法作用域，也就是外层调用者obj：
+var obj = {
+    birth: 1990,
+    getAge: function () {
+        var b = this.birth; // 1990
+        var fn = () => new Date().getFullYear() - this.birth; // this指向obj对象
+        return fn();
+    }
+};
+obj.getAge(); // 25
+
+七.generator
+1.generator（生成器）是ES6标准引入的新的数据类型。一个generator看上去像一个函数，但可以返回多次。
+
+2.generator和函数不同的是，generator由function*定义（注意多出的*号），并且，除了return语句，还可以用yield返回多次。
+
+
+2.因为generator可以在执行过程中多次返回，所以它看上去就像一个可以记住执行状态的函数，利用这一点，写一个generator就可以实现需要用面向对象才能实现的功能。例如，用一个对象来保存状态，得这么写：
+
+3.要编写一个产生斐波那契数列的函数，可以这么写：
+function* fib(max) {
+    var
+        t,
+        a = 0,
+        b = 1,
+        n = 1;
+    while (n < max) {
+        yield a;
+        t = a + b;
+        a = b;
+        b = t;
+        n ++;
+    }
+    return a;
+}
+fib(5); // fib {[[GeneratorStatus]]: "suspended", [[GeneratorReceiver]]: Window}
+直接调用一个generator和调用函数不一样，fib(5)仅仅是创建了一个generator对象，还没有去执行它。
+var f = fib(5);
+f.next(); // {value: 0, done: false}
+f.next(); // {value: 1, done: false}
+f.next(); // {value: 1, done: false}
+f.next(); // {value: 2, done: false}
+f.next(); // {value: 3, done: true}
+
+4.因为generator可以在执行过程中多次返回，所以它看上去就像一个可以记住执行状态的函数，利用这一点，写一个generator就可以实现需要用面向对象才能实现的功能。例如，用一个对象来保存状态.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
