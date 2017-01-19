@@ -1,0 +1,172 @@
+				第五部分 浏览器
+
+http://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/0014344997647015f03abc1bb5f46129a7526292a12ab26000
+一.浏览器
+由于JavaScript的出现就是为了能在浏览器中运行，所以，浏览器自然是JavaScript开发者必须要关注的。
+
+2.目前主流的浏览器分这么几种：
+
+IE 6~11：国内用得最多的IE浏览器，历来对W3C标准支持差。从IE10开始支持ES6标准；
+
+Chrome：Google出品的基于Webkit内核浏览器，内置了非常强悍的JavaScript引擎——V8。由于Chrome一经安装就时刻保持自升级，所以不用管它的版本，最新版早就支持ES6了；
+
+Safari：Apple的Mac系统自带的基于Webkit内核的浏览器，从OS X 10.7 Lion自带的6.1版本开始支持ES6，目前最新的OS X 10.11 El Capitan自带的Safari版本是9.x，早已支持ES6；
+
+Firefox：Mozilla自己研制的Gecko内核和JavaScript引擎OdinMonkey。早期的Firefox按版本发布，后来终于聪明地学习Chrome的做法进行自升级，时刻保持最新；
+
+移动设备上目前iOS和Android两大阵营分别主要使用Apple的Safari和Google的Chrome，由于两者都是Webkit核心，结果HTML5首先在手机上全面普及（桌面绝对是Microsoft拖了后腿），对JavaScript的标准支持也很好，最新版本均支持ES6。
+
+二。浏览器对象
+1. window 
+window对象不但充当全局作用区域，而且表示浏览器窗口
+
+window对象有innerWidth 和innerHeight 属性，可以获取浏览器窗口的宽度和高度。内部宽高是指除去菜单栏、工具栏、边框等占位元素后，用于显示网页的净宽高。
+
+兼容性：IE<=8不支持。
+
+alert('window inner size: ' + window.innerWidth + ' x ' + window.innerHeight);
+
+对应的，还有一个outerWidth和outerHeight属性，可以获取浏览器窗口的整个宽高。
+
+2.navigator
+navigator对象表示浏览器的信息，最常用的属性包括：
+navigator.appName：浏览器名称；
+navigator.appVersion：浏览器版本；
+navigator.language：浏览器设置的语言；
+navigator.platform：操作系统类型；
+navigator.userAgent：浏览器设定的User-Agent字符串。
+
+3.请注意，navigator的信息可以很容易地被用户修改，所以JavaScript读取的值不一定是正确的。很多初学者为了针对不同浏览器编写不同的代码，喜欢用if判断浏览器版本，例如：
+var width;
+if (getIEVersion(navigator.userAgent) < 9) {
+    width = document.body.clientWidth;
+} else {
+    width = window.innerWidth;
+}
+
+但这样既可能判断不准确，也很难维护代码。正确的方法是充分利用JavaScript对不存在属性返回undefined的特性，直接用短路运算符||计算：
+
+var width = window.innerWidth || document.body.clientWidth;
+
+4.screen
+screen对象表示屏幕的信息，常用的属性有：
+screen.width：屏幕宽度，以像素为单位；
+screen.height：屏幕高度，以像素为单位；
+screen.colorDepth：返回颜色位数，如8、16、24。
+
+5.location
+location 对象表示当前页面的URL信息。例如：一个完整的URL：
+可以用location.href获取。要获得URL各个部分的值，可以这么写：
+location.protocol; // 'http'
+location.host; // 'www.example.com'
+location.port; // '8080'
+location.pathname; // '/path/index.html'
+location.search; // '?a=1&b=2'
+location.hash; // 'TOP'
+
+6.要加载一个新页面，可以调用location.assign()。如果要重新加载当前页面，调用location.reload()方法非常方便。
+
+7.document
+document对象表示当前页面。由于HTML在浏览器中以DOM形式表示树性结构，document对象就是整个DOM的根节点。
+document的title属性是从HTML文档中的<title>xxx</title>读取的，但是可以动态改变：
+document.title = '努力学习JavaScript!';
+
+8.用document对象提供的getElementById()和getElementsByTagName()可以按ID获得一个DOM节点和按Tag名称获得一组DOM节点：
+
+document对象还有一个cookie属性，可以获取当前页面的Cookie。
+
+9.history对象保存了浏览器的历史记录，JavaScript可以调用history对象的back()或forward ()，相当于用户点击了浏览器的“后退”或“前进”按钮。
+
+10.新手开始设计Web页面时喜欢在登录页登录成功时调用history.back()，试图回到登录前的页面。这是一种错误的方法。
+
+任何情况，你都不应该使用history这个对象了。
+
+
+三.操作DOM
+1.由于HTML文档被浏览器解析后就是一棵DOM树，要改变HTML的结构，就需要通过JavaScript来操作DOM。
+
+始终记住DOM是一个树形结构。操作一个DOM节点实际上就是这么几个操作：
+
+更新：更新该DOM节点的内容，相当于更新了该DOM节点表示的HTML的内容；
+
+遍历：遍历该DOM节点下的子节点，以便进行进一步操作；
+
+添加：在该DOM节点下新增一个子节点，相当于动态增加了一个HTML节点；
+
+删除：将该节点从HTML中删除，相当于删掉了该DOM节点的内容以及它包含的所有子节点。
+
+
+由于ID在HTML文档中是唯一的，所以document.getElementById()可以直接定位唯一的一个DOM节点。document.getElementsByTagName()和document.getElementsByClassName()总是返回一组DOM节点。要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。
+
+// 返回ID为'test'的节点：
+var test = document.getElementById('test');
+
+// 先定位ID为'test-table'的节点，再返回其内部所有tr节点：
+var trs = document.getElementById('test-table').getElementsByTagName('tr');
+
+// 先定位ID为'test-div'的节点，再返回其内部所有class包含red的节点：
+var reds = document.getElementById('test-div').getElementsByClassName('red');
+
+// 获取节点test下的所有直属子节点:
+var cs = test.children;
+
+// 获取节点test下第一个、最后一个子节点：
+var first = test.firstElementChild;
+var last = test.lastElementChild;
+
+2.第二种方法是使用querySelector()和querySelectorAll()，需要了解selector语法，然后使用条件来获取节点，更加方便：
+// 通过querySelector获取ID为q1的节点：
+var q1 = document.querySelector('#q1');
+
+// 通过querySelectorAll获取q1节点内的符合条件的所有节点：
+var ps = q1.querySelectorAll('div.highlighted > p');
+
+注意：低版本的IE<8不支持querySelector和querySelectorAll。IE8仅有限支持。
+
+严格地讲，我们这里的DOM节点是指Element，但是DOM节点实际上是Node，在HTML中，Node包括Element、Comment、CDATA_SECTION等很多种，以及根节点Document类型，但是，绝大多数时候我们只关心Element，也就是实际控制页面结构的Node，其他类型的Node忽略即可。根节点Document已经自动绑定为全局变量document。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
