@@ -175,6 +175,244 @@ innerHTML   、 innerText   、 textContent  、 style .
 </div>
 
 
+d="js">JavaScript</p>添加到<div id="list">的最后一项：
+
+var
+    js = document.getElementById('js'),
+    list = document.getElementById('list');
+list.appendChild(js);
+现在，HTML结构变成了这样：
+
+<!-- HTML结构 -->
+<div id="list">
+    <p id="java">Java</p>
+    <p id="python">Python</p>
+    <p id="scheme">Scheme</p>
+    <p id="js">JavaScript</p>
+</div>
+
+因为我们插入的js节点已经存在于当前的文档树，因此这个节点首先会从原先的位置删除，再插入到新的位置。
+
+
+2.更多的时候我们会从零创建一个新的节点，然后插入到指定位置：
+
+var
+    list = document.getElementById('list'),
+    haskell = document.createElement('p');//创建新的节点
+haskell.id = 'haskell';//设置节点属性
+haskell.innerText = 'Haskell';
+list.appendChild(haskell);
+
+3.动态创建一个节点然后添加到DOM树中，可以实现很多功能。举个例子，下面的代码动态创建了一个<style>节点，然后把它添加到<head>节点的末尾，这样就动态地给文档添加了新的CSS定义：
+var d = document.createElement('style');
+d.setAttribute('type', 'text/css');
+d.innerHTML = 'p { color: red }';
+document.getElementsByTagName('head')[0].appendChild(d);
+
+4.insertBefore
+如果我们要把子节点插入到指定的位置怎么办？可以使用parentElement.insertBefore(newElement, referenceElement);，子节点会插入到referenceElement之前。
+
+var
+    list = document.getElementById('list'),
+    ref = document.getElementById('python'),//获得某节点位置吧
+    haskell = document.createElement('p');
+haskell.id = 'haskell';
+haskell.innerText = 'Haskell';
+list.insertBefore(haskell, ref);／／插入某节点之前。
+
+可见，使用insertBefore重点是要拿到一个“参考子节点”的引用。很多时候，需要循环一个父节点的所有子节点，可以通过迭代children属性实现：
+
+var
+    i, c,
+    list = document.getElementById('list');
+for (i = 0; i < list.children.length; i++) {
+    c = list.children[i]; // 拿到第i个子节点
+}
+
+
+六。删除DOM
+1.要删除一个节点，首先要获得该节点本身以及它的父节点，然后，调用父节点的removeChild把自己删掉：
+
+// 拿到待删除节点:
+var self = document.getElementById('to-be-removed');
+// 拿到父节点:
+var parent = self.parentElement;
+// 删除:
+var removed = parent.removeChild(self);
+removed === self; // true
+
+注意：到删除后的节点虽然不在文档树中了，但其实它还在内存中，可以随时再次被添加到别的位置。
+
+2.当你遍历一个父节点的子节点并进行删除操作时，要注意，children属性是一个只读属性，并且它在子节点变化时会实时更新。
+
+var parent = document.getElementById('parent');
+parent.removeChild(parent.children[0]);
+parent.removeChild(parent.children[1]); // <-- 浏览器报错
+
+浏览器报错：parent.children[1]不是一个有效的节点。原因就在于，当<p>First</p>节点被删除后，parent.children的节点数量已经从2变为了1，索引[1]已经不存在了。
+
+因此，删除多个节点时，要注意children属性时刻都在变化。
+
+
+七。操作表单
+1.用JavaScript操作表单和操作DOM是类似的，因为表单本身也是DOM树。
+
+不过表单的输入框、下拉框等可以接收用户输入，所以用JavaScript来操作表单，可以获得用户输入的内容，或者对一个输入框设置新的内容。
+
+HTML表单的输入控件主要有以下几种：
+
+文本框，对应的<input type="text">，用于输入文本；
+
+口令框，对应的<input type="password">，用于输入口令；
+
+单选框，对应的<input type="radio">，用于选择一项；
+
+复选框，对应的<input type="checkbox">，用于选择多项；
+
+下拉框，对应的<select>，用于选择一项；
+
+隐藏文本，对应的<input type="hidden">，用户不可见，但表单提交时会把隐藏文本发送到服务器。
+
+2.获取值
+如果我们获得了一个<input>节点的引用，就可以直接调用value获得对应的用户输入值：
+// <input type="text" id="email">
+var input = document.getElementById('email');
+input.value; // '用户输入的值'
+
+这种方式可以应用于text、password、hidden以及select。但是，对于单选框和复选框，value属性返回的永远是HTML预设的值，而我们需要获得的实际是用户是否“勾上了”选项，所以应该用checked判断：
+
+/ <label><input type="radio" name="weekday" id="monday" value="1"> Monday</label>
+// <label><input type="radio" name="weekday" id="tuesday" value="2"> Tuesday</label>
+var mon = document.getElementById('monday');
+var tue = document.getElementById('tuesday');
+mon.value; // '1'
+tue.value; // '2'
+mon.checked; // true或者false
+tue.checked; // true或者false
+
+3.设置值
+设置值和获取值类似，对于text、password、hidden以及select，直接设置value就可以：
+// <input type="text" id="email">
+var input = document.getElementById('email');
+input.value = 'test@example.com'; // 文本框的内容已更新
+对于单选框和复选框，设置checked为true或false即可。
+
+4.HTML5控件
+HTML5新增了大量标准控件，常用的包括date、datetime、datetime-local、color等，它们都使用<input>标签：
+
+<input type="date" value="2015-07-01">
+
+<input type="datetime-local" value="2015-07-01T02:03:04">
+
+<input type="color" value="#ff0000">
+
+不支持HTML5的浏览器无法识别新的控件，会把它们当做type="text"来显示。支持HTML5的浏览器将获得格式化的字符串。例如，type="date"类型的input的value将保证是一个有效的YYYY-MM-DD格式的日期，或者空字符串。
+
+5.提交表单
+最后，JavaScript可以以两种方式来处理表单的提交（AJAX方式在后面章节介绍）。
+
+方式一是通过<form>元素的submit()方法提交一个表单，例如，响应一个<button>的click事件，在JavaScript代码中提交表单：
+
+<!-- HTML -->
+<form id="test-form">
+    <input type="text" name="test">
+    <button type="button" onclick="doSubmitForm()">Submit</button>
+</form>
+
+<script>
+function doSubmitForm() {
+    var form = document.getElementById('test-form');
+    // 可以在此修改form的input...
+    // 提交form:
+    form.submit();
+}
+</script>
+这种方式的缺点是扰乱了浏览器对form的正常提交。浏览器默认点击<button type="submit">时提交表单，或者用户在最后一个输入框按回车键。因此，第二种方式是响应<form>本身的onsubmit事件，在提交form时作修改：
+<!-- HTML -->
+<form id="test-form" onsubmit="return checkForm()">
+    <input type="text" name="test">
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+function checkForm() {
+    var form = document.getElementById('test-form');
+    // 可以在此修改form的input...
+    // 继续下一步:
+    return true;
+}
+</script>
+
+注意要return true来告诉浏览器继续提交，如果return false，浏览器将不会继续提交form，这种情况通常对应用户输入有误，提示用户错误信息后终止提交form。
+
+在检查和修改<input>时，要充分利用<input type="hidden">来传递数据。
+
+例如，很多登录表单希望用户输入用户名和口令，但是，安全考虑，提交表单时不传输明文口令，而是口令的MD5。普通JavaScript开发人员会直接修改<input>：
+
+<!-- HTML -->
+<form id="login-form" method="post" onsubmit="return checkForm()">
+    <input type="text" id="username" name="username">
+    <input type="password" id="password" name="password">
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+function checkForm() {
+    var pwd = document.getElementById('password');
+    // 把用户输入的明文变为MD5:
+    pwd.value = toMD5(pwd.value);
+    // 继续下一步:
+    return true;
+}
+</script>
+
+这个做法看上去没啥问题，但用户输入了口令提交时，口令框的显示会突然从几个*变成32个*（因为MD5有32个字符）。
+
+要想不改变用户的输入，可以利用<input type="hidden">实现：
+
+<!-- HTML -->
+<form id="login-form" method="post" onsubmit="return checkForm()">
+    <input type="text" id="username" name="username">
+    <input type="password" id="input-password">
+    <input type="hidden" id="md5-password" name="password">
+    <button type="submit">Submit</button>
+</form>
+
+<script>
+function checkForm() {
+    var input_pwd = document.getElementById('input-password');
+    var md5_pwd = document.getElementById('md5-password');
+    // 把用户输入的明文变为MD5:
+    md5_pwd.value = toMD5(input_pwd.value);
+    // 继续下一步:
+    return true;
+}
+</script>
+
+注意到id为md5-password的<input>标记了name="password"，而用户输入的id为input-password的<input>没有name属性。没有name属性的<input>的数据不会被提交。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
